@@ -111,3 +111,62 @@ INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad
 VALUES (e5eca37c-585c-4ae4-8b6b-fe190b21e94a,
         '2026-05-20 17:42:21.723+0000', uuid(), 199.00, 'u_obradi', 'Split');
 
+-- Korak 4 
+
+SELECT korisnik_id, created_at, ukupno, status
+FROM narudzbe
+WHERE korisnik_id = 0c8895f5-7d1d-43e7-ace7-f75788b6e5a6;
+
+SELECT * FROM narudzbe
+WHERE korisnik_id = 0c8895f5-7d1d-43e7-ace7-f75788b6e5a6
+  AND created_at >= '2024-01-01 00:00:00+0000';
+
+
+SELECT * FROM narudzbe
+WHERE korisnik_id = 0c8895f5-7d1d-43e7-ace7-f75788b6e5a6
+LIMIT 2;
+
+SELECT naziv, cijena, kategorija, dostupnost
+FROM proizvodi;
+
+SELECT naziv, cijena FROM proizvodi
+WHERE kategorija = 'elektronika'
+ALLOW FILTERING;
+
+
+SELECT naziv, cijena FROM proizvodi
+WHERE dostupnost = true
+ALLOW FILTERING;
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (e601bd5e-76df-4b91-8993-5675006a7daf,
+        toTimestamp(now()), uuid(), 9.99, 'test', 'Mostar')
+USING TTL 60;
+
+SELECT TTL(status), TTL(ukupno), status, grad
+FROM narudzbe
+WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf;
+
+
+SELECT * FROM narudzbe
+WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf
+ORDER BY created_at ASC;
+
+SELECT * FROM narudzbe
+WHERE status = 'isporuceno'
+ALLOW FILTERING;
+
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (e601bd5e-76df-4b91-8993-5675006a7daf,
+        toTimestamp(now()), uuid(), 5.00, 'ttl_test', 'Mostar')
+USING TTL 30;
+
+
+SELECT TTL(status), status, grad
+FROM narudzbe
+WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf;
+
+
+
+

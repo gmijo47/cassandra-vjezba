@@ -10,5 +10,8 @@ Izbor partition key-a je kritičan jer određuje kako se podaci distribuiraju iz
 
 ---
 
-## Zadatak 3
+## Zadatak 4
+
+**Partition key** određuje koji čvor sadrži podatke i mora biti prisutan u WHERE upitu (`WHERE user_id = ?`), dok **clustering column** sortira podatke unutar particije i može biti korišten s operatorima kao što su `<`, `>`, `<=`, `>=` (`WHERE user_id = ? AND timestamp >= ?`). Partition key je obavezna u WHERE klauzuli jer će upit inače trebati skenirati sve čvorove, dok se clustering colummni mogu koristiti opciono za filtriranje unutar već pronađene particije.
+
 
