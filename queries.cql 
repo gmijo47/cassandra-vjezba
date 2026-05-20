@@ -221,5 +221,215 @@ SELECT * FROM narudzbe
 WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf;
 
 
+-- Korak 7 
+
+ALTER TABLE proizvodi
+ADD CONSTRAINT naziv_nn CHECK (naziv IS NOT NULL);
+
+ALTER TABLE proizvodi
+ADD CONSTRAINT cijena_pozitivna CHECK (cijena > 0);
+
+ALTER TABLE recenzije
+ADD CONSTRAINT ocjena_raspon CHECK (ocjena >= 1 AND ocjena <= 5);
+
+DESCRIBE KEYSPACE vjezba;
+
+DESCRIBE TABLE narudzbe;
+DESCRIBE TABLE narudzbe_po_gradu;
+
+SELECT * FROM system_schema.indexes
+WHERE keyspace_name = 'vjezba';
+
+TRUNCATE TABLE recenzije;
+
+DROP TABLE IF EXISTS recenzije;
+
+DROP KEYSPACE IF EXISTS vjezba;
+
+-- Završni zadatak — Online trgovina
+
+CREATE INDEX idx_dostupnost ON proizvodi (dostupnost);
+
+SELECT naziv, cijena FROM proizvodi
+WHERE dostupnost = true;
+
+DESCRIBE INDEX idx_dostupnost;
+
+CREATE MATERIALIZED VIEW narudzbe_po_statusu AS
+  SELECT *
+  FROM narudzbe
+  WHERE status IS NOT NULL
+    AND korisnik_id IS NOT NULL
+    AND created_at IS NOT NULL
+  PRIMARY KEY (status, korisnik_id, created_at)
+  WITH CLUSTERING ORDER BY (korisnik_id ASC, created_at DESC);
 
 
+SELECT * FROM narudzbe_po_statusu
+WHERE status = 'isporuceno';
+
+
+SELECT SUM(ukupno) AS ukupna_potrosnja
+FROM narudzbe
+WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf;
+
+SELECT AVG(ukupno) AS prosjecni_iznos
+FROM narudzbe
+WHERE korisnik_id = e601bd5e-76df-4b91-8993-5675006a7daf;
+
+
+SELECT AVG(ocjena) AS prosjecna_ocjena, COUNT(*) AS broj_recenzija
+FROM recenzije
+WHERE proizvod_id = a0cfd9da-1c43-40d0-8fbf-906693abd8b8;
+
+-- Završni zadatak 
+CREATE TABLE IF NOT EXISTS tecaj (
+  tecaj_id      UUID PRIMARY KEY,
+  naziv         TEXT,
+  instruktor    TEXT,
+  kategorija    TEXT,
+  cijena        DECIMAL,
+  trajanje_sati INT
+);
+
+CREATE TABLE IF NOT EXISTS upis (
+  student_id   UUID,
+  tecaj_id     UUID,
+  datum_upisa  TIMESTAMP,
+  napredak     INT,
+  status       TEXT,
+  PRIMARY KEY (student_id, tecaj_id)
+);
+
+CREATE TABLE IF NOT EXISTS lekcija (
+  tecaj_id     UUID,
+  redni_broj   INT,
+  naslov        TEXT,
+  trajanje_min  INT,
+  sadrzaj_url   TEXT,
+  PRIMARY KEY (tecaj_id, redni_broj)
+) WITH CLUSTERING ORDER BY (redni_broj ASC);
+
+INSERT INTO tecaj (tecaj_id, naziv, instruktor, kategorija, cijena, trajanje_sati)
+VALUES (45b2617b-cdb8-421c-8c84-02e9ddb58ef6, 'Python za početnike', 'Ana Horvat', 'programiranje', 49.99, 12);
+
+INSERT INTO tecaj (tecaj_id, naziv, instruktor, kategorija, cijena, trajanje_sati)
+VALUES (bd5306fe-02ff-4450-a84a-db10c75e4731, 'Web dizajn s CSS-om', 'Marko Perić', 'dizajn', 39.99, 8);
+
+INSERT INTO tecaj (tecaj_id, naziv, instruktor, kategorija, cijena, trajanje_sati)
+VALUES (8beb29c6-dba4-489b-9599-785936366a55, 'SQL osnove', 'Iva Novak', 'baze_podataka', 29.99, 6);
+
+INSERT INTO tecaj (tecaj_id, naziv, instruktor, kategorija, cijena, trajanje_sati)
+VALUES (d1b8b309-28da-487b-aec7-be8b08c34058, 'Machine Learning uvod', 'Ana Horvat', 'data_science', 89.99, 20);
+
+INSERT INTO tecaj (tecaj_id, naziv, instruktor, kategorija, cijena, trajanje_sati)
+VALUES (e3caec08-9272-4112-b672-443b0d355545, 'Docker i Kubernetes', 'Tomislav Babić', 'devops', 69.99, 15);
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (c3aeab39-213e-4da5-b867-e7d25a41f3c6, 45b2617b-cdb8-421c-8c84-02e9ddb58ef6, toTimestamp(now()), 80, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (c3aeab39-213e-4da5-b867-e7d25a41f3c6, bd5306fe-02ff-4450-a84a-db10c75e4731, toTimestamp(now()), 45, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (c3aeab39-213e-4da5-b867-e7d25a41f3c6, 8beb29c6-dba4-489b-9599-785936366a55, toTimestamp(now()), 100, 'završen');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (98c15f5f-0eea-4b39-bb69-e06d41787888, 45b2617b-cdb8-421c-8c84-02e9ddb58ef6, toTimestamp(now()), 20, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (98c15f5f-0eea-4b39-bb69-e06d41787888, d1b8b309-28da-487b-aec7-be8b08c34058, toTimestamp(now()), 60, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (98c15f5f-0eea-4b39-bb69-e06d41787888, e3caec08-9272-4112-b672-443b0d355545, toTimestamp(now()), 0, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (91af1397-66aa-459e-8bb8-4bd08bf7c194, 8beb29c6-dba4-489b-9599-785936366a55, toTimestamp(now()), 75, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (91af1397-66aa-459e-8bb8-4bd08bf7c194, bd5306fe-02ff-4450-a84a-db10c75e4731, toTimestamp(now()), 90, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (91af1397-66aa-459e-8bb8-4bd08bf7c194, d1b8b309-28da-487b-aec7-be8b08c34058, toTimestamp(now()), 30, 'aktivan');
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (91af1397-66aa-459e-8bb8-4bd08bf7c194, e3caec08-9272-4112-b672-443b0d355545, toTimestamp(now()), 55, 'aktivan');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (45b2617b-cdb8-421c-8c84-02e9ddb58ef6, 1, 'Uvod u Python', 15, 'https://tecajevi.hr/python/1');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (45b2617b-cdb8-421c-8c84-02e9ddb58ef6, 2, 'Varijable i tipovi', 20, 'https://tecajevi.hr/python/2');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (45b2617b-cdb8-421c-8c84-02e9ddb58ef6, 3, 'Petlje i uvjeti', 25, 'https://tecajevi.hr/python/3');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (bd5306fe-02ff-4450-a84a-db10c75e4731, 1, 'Box model', 20, 'https://tecajevi.hr/css/1');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (bd5306fe-02ff-4450-a84a-db10c75e4731, 2, 'Flexbox', 30, 'https://tecajevi.hr/css/2');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (bd5306fe-02ff-4450-a84a-db10c75e4731, 3, 'Grid layout', 30, 'https://tecajevi.hr/css/3');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (8beb29c6-dba4-489b-9599-785936366a55, 1, 'Što je SQL', 10, 'https://tecajevi.hr/sql/1');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (8beb29c6-dba4-489b-9599-785936366a55, 2, 'SELECT i WHERE', 20, 'https://tecajevi.hr/sql/2');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (8beb29c6-dba4-489b-9599-785936366a55, 3, 'JOIN upiti', 25, 'https://tecajevi.hr/sql/3');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (d1b8b309-28da-487b-aec7-be8b08c34058, 1, 'Uvod u ML', 20, 'https://tecajevi.hr/ml/1');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (d1b8b309-28da-487b-aec7-be8b08c34058, 2, 'Linearna regresija', 40, 'https://tecajevi.hr/ml/2');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (d1b8b309-28da-487b-aec7-be8b08c34058, 3, 'Klasifikacija', 40, 'https://tecajevi.hr/ml/3');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (e3caec08-9272-4112-b672-443b0d355545, 1, 'Docker osnove', 30, 'https://tecajevi.hr/docker/1');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (e3caec08-9272-4112-b672-443b0d355545, 2, 'Docker Compose', 35, 'https://tecajevi.hr/docker/2');
+
+INSERT INTO lekcija (tecaj_id, redni_broj, naslov, trajanje_min, sadrzaj_url)
+VALUES (e3caec08-9272-4112-b672-443b0d355545, 3, 'Kubernetes uvod', 45, 'https://tecajevi.hr/docker/3');
+
+SELECT * FROM lekcija
+WHERE tecaj_id = 45b2617b-cdb8-421c-8c84-02e9ddb58ef6;
+
+SELECT * FROM upis
+WHERE student_id = c3aeab39-213e-4da5-b867-e7d25a41f3c6;
+
+UPDATE upis
+SET napredak = 95
+WHERE student_id = c3aeab39-213e-4da5-b867-e7d25a41f3c6
+  AND tecaj_id = 45b2617b-cdb8-421c-8c84-02e9ddb58ef6;
+
+INSERT INTO upis (student_id, tecaj_id, datum_upisa, napredak, status)
+VALUES (98c15f5f-0eea-4b39-bb69-e06d41787888, 8beb29c6-dba4-489b-9599-785936366a55, toTimestamp(now()), 0, 'trial')
+USING TTL 604800;
+
+CREATE MATERIALIZED VIEW tecaj_po_kategoriji AS
+  SELECT *
+  FROM tecaj
+  WHERE kategorija IS NOT NULL
+    AND tecaj_id IS NOT NULL
+  PRIMARY KEY (kategorija, tecaj_id);
+
+SELECT * FROM tecaj_po_kategoriji
+WHERE kategorija = 'programiranje';
+
+SELECT tecaj_id, COUNT(*) AS broj_upisa
+FROM upis
+WHERE tecaj_id = 45b2617b-cdb8-421c-8c84-02e9ddb58ef6
+ALLOW FILTERING;
+
+SELECT student_id, AVG(napredak) AS prosjecni_napredak
+FROM upis
+WHERE student_id = c3aeab39-213e-4da5-b867-e7d25a41f3c6;
