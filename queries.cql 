@@ -41,3 +41,14 @@ CREATE TABLE recenzije (
 
 DESCRIBE TABLES;
 DESCRIBE TABLE narudzbe;
+
+-- Zadatak 2
+
+CREATE TABLE IF NOT EXISTS product_views (
+    user_id UUID,
+    view_date DATE,
+    product_id UUID,
+    view_count INT,
+    PRIMARY KEY ((user_id, view_date), product_id)
+);
+
