@@ -52,3 +52,62 @@ CREATE TABLE IF NOT EXISTS product_views (
     PRIMARY KEY ((user_id, view_date), product_id)
 );
 
+-- Korak 3
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Laptop Pro 15', 1299.99, 'elektronika', true);
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Bežične slušalice', 149.99, 'elektronika', true);
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Ergonomska stolica', 349.00, 'namještaj', true);
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Mehanička tipkovnica', 89.99, 'elektronika', false);
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Monitor 27"', 499.00, 'elektronika', true);
+
+INSERT INTO proizvodi (id, naziv, cijena, kategorija, dostupnost)
+VALUES (uuid(), 'Radni stol', 279.00, 'namještaj', true);
+
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (0c8895f5-7d1d-43e7-ace7-f75788b6e5a6,
+        toTimestamp(now()), uuid(), 1449.98, 'isporuceno', 'Zagreb');
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (0c8895f5-7d1d-43e7-ace7-f75788b6e5a6,
+        toTimestamp(now()), uuid(), 349.00, 'u_obradi', 'Zagreb');
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (0c8895f5-7d1d-43e7-ace7-f75788b6e5a6,
+        toTimestamp(now()), uuid(), 89.99, 'isporuceno', 'Zagreb');
+
+-- Narudžbe korisnika B (2 narudžbe)
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (e5eca37c-585c-4ae4-8b6b-fe190b21e94a,
+        toTimestamp(now()), uuid(), 499.00, 'isporuceno', 'Split');
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (e5eca37c-585c-4ae4-8b6b-fe190b21e94a,
+        toTimestamp(now()), uuid(), 279.00, 'otkazano', 'Split');
+
+
+INSERT INTO recenzije (proizvod_id, korisnik_id, ocjena, komentar, created_at)
+VALUES (a0cfd9da-1c43-40d0-8fbf-906693abd8b8, 0c8895f5-7d1d-43e7-ace7-f75788b6e5a6,
+        5, 'Odličan laptop, brz i tih.', toTimestamp(now()));
+
+INSERT INTO recenzije (proizvod_id, korisnik_id, ocjena, komentar, created_at)
+VALUES (a0cfd9da-1c43-40d0-8fbf-906693abd8b8, e5eca37c-585c-4ae4-8b6b-fe190b21e94a,
+        4, 'Dobra kupnja, baterija mogla bolja.', toTimestamp(now()));
+
+INSERT INTO recenzije (proizvod_id, korisnik_id, ocjena, komentar, created_at)
+VALUES (1d87fb5f-8122-4fb5-ba2d-1393b0672176, 0c8895f5-7d1d-43e7-ace7-f75788b6e5a6,
+        5, 'Spasila mi je leđa!', toTimestamp(now()));
+
+INSERT INTO narudzbe (korisnik_id, created_at, narudzba_id, ukupno, status, grad)
+VALUES (e5eca37c-585c-4ae4-8b6b-fe190b21e94a,
+        '2026-05-20 17:42:21.723+0000', uuid(), 199.00, 'u_obradi', 'Split');
+
